@@ -50,7 +50,7 @@ rasterSource <- function(r,grid,nlevels="all",verbose = T){
     X    <- X * total_box/sum(X) # to conserve mass
 
     if(verbose)
-      print(paste("Grid output:",col,"columns",rol,"rows"))
+      cat(paste("Grid output:",col,"columns",rol,"rows\n"))
   }else{
     if(nlevels == "all"){
       nlevels <- dim(grid$z)[3]
@@ -62,12 +62,15 @@ rasterSource <- function(r,grid,nlevels="all",verbose = T){
     X    <- raster::resample(r,box,method = "bilinear") # non-conservative transformation
     X    <- raster::flip(X,2)
     X    <- raster::t(X)
-    X    <- raster::as.array(X)
-    X    <- X[,,1:nlevels]
+    Y    <- raster::as.matrix(X)
+    X    <- array(NA,c(dim(Y),nlevels))
+    for(i in 1:nlevels){
+      X[,,i] = Y
+    }
     # X    <- X * total_box[1:nlevels]/sum(X) # to conserve mass
 
     if(verbose)
-      print(paste("Grid output:",col,"columns",rol,"rows",nlevels,"levels"))
+      cat(paste("Grid output:",col,"columns",rol,"rows",nlevels,"levels\n"))
   }
 
   return(X)

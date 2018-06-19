@@ -33,7 +33,7 @@
 
 gridInfo <- function(file = file.choose(),z=F,verbose = T){
     if(verbose)
-      print(paste("Grid information from:",file))
+      cat(paste("Grid information from:",file,"\n"))
     wrf <- ncdf4::nc_open(file)
     lat <- ncdf4::ncvar_get(wrf,varid = "XLAT")
     lon <- ncdf4::ncvar_get(wrf,varid = "XLONG")
@@ -54,7 +54,7 @@ gridInfo <- function(file = file.choose(),z=F,verbose = T){
     lx  <- range(lon)
     ly  <- range(lat)
     OUT <- list(Times = time, Lat = lat, Lon = lon, Horizontal = dim(lat),
-                Levels = levels, DX = dx,xlim = lx, Ylim = ly, File = file,
+                Levels = z, DX = dx,xlim = lx, Ylim = ly, File = file,
                 Box = list(x = c(lx[2],lx[1],lx[1],lx[2],lx[2]),
                            y = c(ly[2],ly[2],ly[1],ly[1],ly[2])),z = z)
     return(OUT)

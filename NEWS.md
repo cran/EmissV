@@ -1,4 +1,15 @@
-## EmissV 0.664.5 (2018-03-24)
+## EmissV 0.664.7 (2018-05-29)
+- added automated tests (cod-cov)
+- lineSource is faster, uses sf and data.table instead of several packages
+- removing: spatsts, maptools, rgeos, rgdal dependencies
+
+## EmissV 0.664.6 (2018-05-29)
+- adding fest (fast!) argument in lineSource
+- lineSource use sp or sf
+
+## EmissV 0.664.5 (2018-05-31)
+- CRAN version
+- funcion streetDist not included
 - all external data was reduced from 28mb to less than 1mb
 - examples update
 - functions messages update

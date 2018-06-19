@@ -4,10 +4,10 @@
 \alias{lineSource}
 \title{Distribution of emissions by streets}
 \source{
-OpenstreetMap data avaliable \url{https://www.openstreetmap.org/}
+OpenstreetMap data avaliable \url{https://www.openstreetmap.org/} and \url{https://download.geofabrik.de/}
 }
 \usage{
-lineSource(s, grid, as_raster = F, verbose = T)
+lineSource(s, grid, as_raster = F, verbose = T, type = "wrfinput")
 }
 \arguments{
 \item{s}{SpatialLinesDataFrame of SpatialLines object}
@@ -17,23 +17,29 @@ lineSource(s, grid, as_raster = F, verbose = T)
 \item{as_raster}{output format, TRUE for raster, FALSE for matrix}
 
 \item{verbose}{display additional information}
+
+\item{type}{"wrfinput" or "geo" for grid type}
 }
 \description{
-Create a distribution from sp spatial lines data frame or spatial lines
+Create a distribution from sp spatial lines data frame or spatial lines.
+
+Use "wrfinput" for a gridInfo from an output from real.exe and "geo" for a output from geog.exe
 }
 \examples{
 \donttest{
 roads <- osmar::get_osm(osmar::complete_file(),
                         source = osmar::osmsource_file(paste(system.file("extdata",
                         package="EmissV"),"/streets.osm.xz",sep="")))
-roads <- osmar::as_sp(roads,what = "lines")
+road_lines <- osmar::as_sp(roads,what = "lines")
+roads <- sf::st_as_sf(road_lines)
 
 d3    <- gridInfo(paste0(system.file("extdata", package = "EmissV"),"/wrfinput_d03"))
 
 roadLength <- lineSource(roads,d3,as_raster=TRUE)
 sp::spplot(roadLength, scales = list(draw=TRUE), ylab="Lat", xlab="Lon",main="Length of roads",
-           sp.layout=list("sp.lines", roads))
+           sp.layout=list("sp.lines", road_lines))
 }
+
 
 }
 \seealso{

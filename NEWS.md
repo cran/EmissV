@@ -1,4 +1,11 @@
+## EmissV 0.664.9 (2018-07-10)
+- fix #20
+
+## EmissV 0.664.8 (2018-06-19)
+- doc updates
+
 ## EmissV 0.664.7 (2018-05-29)
+- on CRAN (2018-06-19)
 - added automated tests (cod-cov)
 - lineSource is faster, uses sf and data.table instead of several packages
 - removing: spatsts, maptools, rgeos, rgdal dependencies

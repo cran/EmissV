@@ -1,3 +1,32 @@
+## EmissV 0.665.1.0 (2019-03-28)
+- lineSource updates: faster, new options for grid generation and suport for variables and length
+- new profile data from 2018 traffic count
+
+## EmissV 0.665.0.4 evil-power version 3 (2019-01-29)
+- read suppor 'GEIA' format for ECCAD emissions and Scenarios 
+- Fix 'MACCITY' option from read
+
+## EmissV 0.665.0.3 evil-power version 3 (2019-01-29)
+- read update
+- GridInfo update
+- adictional doc update
+
+## EmissV 0.665.0.2 evil-power version 2 (2018-11-13)
+- fix 'read()' for 'as_raster = F' and several inputs
+- small fix on messages and examples
+
+## EmissV 0.665.0.1 evil-power version (2018-11-13)
+- added speciation dataset (pm-iag, bcom and edgar 4.3.2)
+- read has speciation integated to split emissions into different species
+- read has coef to merge different inputs to one specie
+- new temporal profiles 'data(perfil)' for sectors from Oliver et al. (2003)
+- Lost of new references
+
+## EmissV 0.665.0 turbo version (2018-11-07)
+- new speciation fuction for total emissions
+- added speciation dataset (veicular-iag and mic)
+- read has speciation integated
+
 ## EmissV 0.664.9 (2018-07-10)
 - fix #20
 

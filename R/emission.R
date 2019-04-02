@@ -53,8 +53,11 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
       cat("Using raster from inventory ...\n")
     # input is g m-2 s-1
     if(class(inventory)[1]=="RasterLayer"){
-      VAR_e <- rasterSource(inventory,grid,verbose = verbose)
+      VAR_e <- rasterSource(inventory,grid,conservative = F,verbose = verbose)
     }
+    ## SET THE ORIGINAL UNITS from read
+    ## g m-2 s-1
+    VAR_e = units::set_units(VAR_e,"g m-2 s-1")
 
     if(aerosol){
       ##  ug m-2 s-1
@@ -81,8 +84,14 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
       raster::values(r) <- as.matrix(as.numeric(VAR_e),ncol = col,nrow = row,byrow = T)
       r                 <- raster::flip(r,2)
 
+      if(missing(pol)){
+        legenda <- paste("Emission [",units::deparse_unit(VAR_e),"]") # nocov
+      }else{
+        legenda <- paste("Emissions of", pol ,"[",units::deparse_unit(VAR_e),"]")
+      }
+
       a <- sp::spplot(r,scales = list(draw=TRUE),ylab="Lat",xlab="Lon",
-                      main=list(label=paste("Emissions of", pol ,"[",units::deparse_unit(VAR_e),"]")),
+                      main=list(label=legenda),
                       col.regions = c("#031638","#001E48","#002756","#003062",
                                       "#003A6E","#004579","#005084","#005C8E",
                                       "#006897","#0074A1","#0081AA","#008FB3",

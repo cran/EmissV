@@ -4,15 +4,28 @@
 \alias{read}
 \title{Read NetCDF data from global inventaries}
 \source{
-read abbout EDGAR at http://edgar.jrc.ec.europa.eu
+Read abbout EDGAR at http://edgar.jrc.ec.europa.eu and MACCITY at
+http://accent.aero.jussieu.fr/MACC_metadata.php
 }
 \usage{
-read(file, version = "EDGAR 4.3.1 v2", as_raster = T, verbose = T)
+read(file = file.choose(), coef = rep(1, length(file)), spec = NULL,
+  version = "EDGAR", month = 1, year = 1, categories,
+  as_raster = T, verbose = T)
 }
 \arguments{
 \item{file}{file name or names (variables are summed)}
 
-\item{version}{inventorie information}
+\item{coef}{coef to merge different sources (file) into one emission}
+
+\item{spec}{numeric speciation vector to split emission into different species}
+
+\item{version}{inventory name 'EDGAR', 'MACCITY' or 'GAINS'}
+
+\item{month}{the desired month of the inventary (MACCITY)}
+
+\item{year}{scenario index (GAINS)}
+
+\item{categories}{considered categories (MACCITY, GAINS variable names), empty for all}
 
 \item{as_raster}{return a raster (defoult) or matrix (with units)}
 
@@ -22,7 +35,11 @@ read(file, version = "EDGAR 4.3.1 v2", as_raster = T, verbose = T)
 Matrix or raster
 }
 \description{
-Read data from global inventoris
+Read data from global inventories, can read several files and merge into one
+emission and/or split into several species (speciation process)
+}
+\note{
+for 'GAINS' version, please use flux (kg m-2 s-1) NetCDF file from https://eccad3.sedoo.fr
 }
 \examples{
 \donttest{
@@ -38,6 +55,24 @@ image(nox_d1, main = "NOx emissions from transport from EDGAR 3.4.1 for d1")
 image(nox_d2, main = "NOx emissions from transport from EDGAR 3.4.1 for d2")
 }
 }
+\references{
+Janssens-Maenhout, G., Dentener, F., Van Aardenne, J., Monni, S., Pagliari, V., Orlandini,
+L., ... & Wankmüller, R. (2012). EDGAR-HTAP: a harmonized gridded air pollution emission dataset
+based on national inventories. European Commission Joint Research Centre Institute for
+Environment and Sustainability. JRC 68434 UR 25229 EUR 25229, ISBN 978-92-79-23123-0.
+
+Lamarque, J.-F., Bond, T. C., Eyring, V., Granier, C., Heil, A., Klimont, Z., Lee, D., Liousse,
+C., Mieville, A., Owen, B., Schultz, M. G., Shindell, D., Smith, S. J., Stehfest, E.,
+Van Aardenne, J., Cooper, O. R., Kainuma, M., Mahowald, N., McConnell, J. R., Naik, V.,
+Riahi, K., and van Vuuren, D. P.: Historical (1850-2000) gridded anthropogenic and biomass
+burning emissions of reactive gases and aerosols: methodology and application,
+Atmos. Chem. Phys., 10, 7017-7039, doi:10.5194/acp-10-7017-2010, 2010.
+
+Z Klimont, S. J. Smith and J Cofala The last decade of global anthropogenic sulfur dioxide:
+2000–2011 emissions Environmental Research Letters 8, 014003, 2013
+}
 \seealso{
 \code{\link{rasterSource}} and \code{\link{gridInfo}}
+
+\code{\link{species}}
 }

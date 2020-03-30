@@ -1,7 +1,7 @@
 Package: EmissV
 Title: Vehicular Emissions by Top-Down Methods
-Date: 2019-04-02
-Version: 0.665.1.0
+Date: 2020-03-29
+Version: 0.665.2.0
 Authors@R: c(
   person(given = "Daniel",
          family = "Schuch",
@@ -24,16 +24,16 @@ Description: Creates emissions for use in air quality models. Vehicular emission
 Depends: R (>= 3.4)
 Imports: ncdf4, units(>= 0.5-1), raster, sp, sf, methods, data.table,
         lwgeom
-Suggests: testthat, covr, osmar, rgdal
+Suggests: testthat (>= 2.1.0), covr, osmar, rgdal, eixport
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 URL: https://atmoschem.github.io/EmissV
 BugReports: https://github.com/atmoschem/EmissV/issues
 NeedsCompilation: no
-Packaged: 2019-04-02 16:59:59 UTC; Schuch
+Packaged: 2020-03-29 20:37:58 UTC; under
 Author: Daniel Schuch [aut, cre] (<https://orcid.org/0000-0001-5977-4519>),
   Sergio Ibarra-Espinosa [aut] (<https://orcid.org/0000-0002-3162-1905>)
 Repository: CRAN
-Date/Publication: 2019-04-02 17:22:53 UTC
+Date/Publication: 2020-03-30 08:50:16 UTC

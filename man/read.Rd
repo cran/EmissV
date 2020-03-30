@@ -8,9 +8,18 @@ Read abbout EDGAR at http://edgar.jrc.ec.europa.eu and MACCITY at
 http://accent.aero.jussieu.fr/MACC_metadata.php
 }
 \usage{
-read(file = file.choose(), coef = rep(1, length(file)), spec = NULL,
-  version = "EDGAR", month = 1, year = 1, categories,
-  as_raster = T, verbose = T)
+read(
+  file = file.choose(),
+  coef = rep(1, length(file)),
+  spec = NULL,
+  version = "EDGAR_v432",
+  month = 1,
+  year = 1,
+  categories,
+  as_raster = T,
+  skip_missing = F,
+  verbose = T
+)
 }
 \arguments{
 \item{file}{file name or names (variables are summed)}
@@ -19,7 +28,7 @@ read(file = file.choose(), coef = rep(1, length(file)), spec = NULL,
 
 \item{spec}{numeric speciation vector to split emission into different species}
 
-\item{version}{inventory name 'EDGAR', 'MACCITY' or 'GAINS'}
+\item{version}{inventory name 'EDGAR_v432','EDGAR_v432','MACCITY' or 'GAINS'}
 
 \item{month}{the desired month of the inventary (MACCITY)}
 
@@ -28,6 +37,8 @@ read(file = file.choose(), coef = rep(1, length(file)), spec = NULL,
 \item{categories}{considered categories (MACCITY, GAINS variable names), empty for all}
 
 \item{as_raster}{return a raster (defoult) or matrix (with units)}
+
+\item{skip_missing}{return a zero emission for missing variables and a warning}
 
 \item{verbose}{display additional information}
 }
@@ -43,16 +54,27 @@ for 'GAINS' version, please use flux (kg m-2 s-1) NetCDF file from https://eccad
 }
 \examples{
 \donttest{
+dir.create(file.path(tempdir(), "EDGARv432"))
+eixport::get_edgar(dataset = "v432_AP",txt = FALSE,copyright = FALSE,
+                   destpath = file.path(tempdir(),"EDGARv432"),
+                   pol = c("NOx"),sector = c("TRO","ENE","IND"),
+                   year = 2012)
+folder <- setwd(file.path(tempdir(), "EDGARv432"))
+unzip('2012_NOx_ENE.zip')
+unzip('2012_NOx_IND.zip')
+unzip('2012_NOx_TRO.zip')
+
+nox    <- read(file = dir(pattern = '.nc'),version = 'EDGAR_v432')
+setwd(folder)
+
+sp::spplot(nox, scales = list(draw=TRUE), xlab="Lat", ylab="Lon",main="NOx emissions from EDGAR")
+
 d1     <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d01",sep=""))
 d2     <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d02",sep=""))
-print("download and untar EDGAR data from:")
-print("http://edgar.jrc.ec.europa.eu/gallery.php?release=v431_v2&substance=NOx&sector=TRO")
-nox    <- read("v431_v2_REFERENCE_NOx_2010_10_TRO.0.1x0.1.nc")
-sp::spplot(nox, scales = list(draw=TRUE), xlab="Lat", ylab="Lon",main="NOx emissions from EDGAR")
 nox_d1 <- rasterSource(nox,d1)
 nox_d2 <- rasterSource(nox,d2)
-image(nox_d1, main = "NOx emissions from transport from EDGAR 3.4.1 for d1")
-image(nox_d2, main = "NOx emissions from transport from EDGAR 3.4.1 for d2")
+image(nox_d1, axe = FALSE, main = "NOx emissions from transport-energy-industry for d1 (2012)")
+image(nox_d2, axe = FALSE, main = "NOx emissions from transport-energy-industry for d2 (2012)")
 }
 }
 \references{

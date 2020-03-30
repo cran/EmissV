@@ -1,9 +1,19 @@
+## EmissV 0.665.2.0 (2020-03-25)
+- New version on CRAN
+
+## EmissV 0.665.1.1 (2020-03-19)
+- read update: support for EDGAR_v432 and EDGAR_v432 added
+
+## EmissV 0.665.1.1 (2019-12-27)
+- gridInfo update: boundary of domain simulation added to output
+- gridinfo: change output parameter Ylim for ylim
+
 ## EmissV 0.665.1.0 (2019-03-28)
-- lineSource updates: faster, new options for grid generation and suport for variables and length
+- lineSource updates: faster, new options for grid generation and support for variables and length
 - new profile data from 2018 traffic count
 
 ## EmissV 0.665.0.4 evil-power version 3 (2019-01-29)
-- read suppor 'GEIA' format for ECCAD emissions and Scenarios 
+- read support 'GEIA' format for ECCAD emissions and Scenarios 
 - Fix 'MACCITY' option from read
 
 ## EmissV 0.665.0.3 evil-power version 3 (2019-01-29)

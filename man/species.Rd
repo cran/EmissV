@@ -73,7 +73,7 @@ default 'mm' into 'emission()' function.
 data(species)
 # names of eath mapping tables
 for(i in 1:length(names(species)))
-    cat(paste0("specie map ",i," ",names(species)[i],"\\n"))
+    cat(paste0("specie map ",i," ",names(species)[i],"\n"))
 # names of species contained in the (first) mapping table
 names(species[[1]])
 # The first mapping table / species and values
@@ -107,10 +107,6 @@ and Technology, 11(8), 2155-2168.
 
 ANDRADE, M. d. F. et al. Air quality forecasting system for southeastern brazil. Frontiers in
 Environmental Science, Frontiers, v. 3, p. 1–12, 2015.
-
-Ntziachristos L. and Samaras Z. 2016. Passneger cars, light commercial trucks, heavy-duty vehicles
-including buses and motor cycles. In: EEA, EMEP. EEA air pollutant emission inventory
-guidebook-2009. European Environment Agency, Copenhagen, 2016.
 
 Crippa, M., Guizzardi, D., Muntean, M., Schaaf, E., Dentener, F., Aardenne, J. A. V., ... &
 Janssens-Maenhout, G. (2018). Gridded emissions of air pollutants for the period 1970–2012

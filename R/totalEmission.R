@@ -6,7 +6,7 @@
 #'
 #' where n is the type of the veicle
 #'
-#'@format Return a list with the daily total emission by interest area (cityes, states, countries, etc).
+#'@return Return a list with the daily total emission by interest area (cityes, states, countries, etc).
 #'
 #'@param v dataframe with the vehicle data
 #'@param ef emission factor
@@ -28,7 +28,7 @@
 #'
 #' TOTAL <- totalEmission(veic,EmissionFactors,pol = c("CO","PM"))
 
-totalEmission <- function(v,ef,pol,verbose = T){
+totalEmission <- function(v,ef,pol,verbose = TRUE){
 
   TOTAL_veic <- as.matrix(v[5:ncol(v)])
   use        <- v$Use
@@ -54,7 +54,7 @@ totalEmission <- function(v,ef,pol,verbose = T){
 
       if(verbose){
         # if (utils::packageVersion("units") <= "0.5-1")
-        #   units::install_conversion_constant("g/d", "t/year", 365/1000000 )
+        #   units::install_conversion_constant("g/d", "t/year", 365/1000000 ) ## to use units::install_unit instead
         total_t_y <- units::set_units(total,"t/year")
         cat(paste("Total of",pol[i],":",sum(total_t_y),units::deparse_unit(total_t_y),"\n"))
       }

@@ -4,16 +4,17 @@
 \alias{gridInfo}
 \title{Read grid information from a NetCDF file}
 \usage{
-gridInfo(file = file.choose(), z = F, geo = F, verbose = T)
+gridInfo(file = file.choose(), z = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{file}{file name/path to a wrfinput, wrfchemi or geog_em file}
 
 \item{z}{TRUE for read wrfinput vertical coordinades}
 
-\item{geo}{True for use geog_em files}
-
 \item{verbose}{display additional information}
+}
+\value{
+a list with grid information from air quality model
 }
 \description{
 Return a list containing information of a regular grid / domain
@@ -22,14 +23,17 @@ Return a list containing information of a regular grid / domain
 just WRF-Chem is suported by now
 }
 \examples{
-grid_d1 <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d01",sep=""))
-\donttest{
-grid_d2 <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d02",sep=""))
-grid_d3 <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d03",sep=""))
+grid_d1 <- gridInfo(paste(system.file("extdata", package = "EmissV"),
+                                      "/wrfinput_d01",sep=""))
+\donttest{grid_d2 <- gridInfo(paste(system.file("extdata", package = "EmissV"),
+                                      "/wrfinput_d02",sep=""))
+grid_d3 <- gridInfo(paste(system.file("extdata", package = "EmissV"),
+                                      "/wrfinput_d03",sep=""))
 names(grid_d1)
 # for plot the shapes
 library(sp)
-shape   <- raster::shapefile(paste0(system.file("extdata", package = "EmissV"),"/BR.shp"))
+shape   <- raster::shapefile(paste0(system.file("extdata", package = "EmissV"),
+                                                "/BR.shp"))
 plot(shape,xlim = c(-55,-40),ylim = c(-30,-15), main="3 nested domains")
 axis(1); axis(2); box(); grid()
 lines(grid_d1$Box, col = "red")

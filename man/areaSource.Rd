@@ -3,14 +3,11 @@
 \name{areaSource}
 \alias{areaSource}
 \title{Distribution of emissions by area}
-\format{
-a raster
-}
 \source{
 Data avaliable \url{https://www.ospo.noaa.gov/Operations/DMSP/index.html}
 }
 \usage{
-areaSource(s, r, grid = NA, name = "", as_frac = F, verbose = T)
+areaSource(s, r, grid = NA, name = "", as_frac = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{s}{input shape object}
@@ -21,12 +18,15 @@ areaSource(s, r, grid = NA, name = "", as_frac = F, verbose = T)
 
 \item{name}{area name}
 
-\item{as_frac}{return a fraction instead of a raster}
+\item{as_frac}{return a fraction instead of the raster value}
 
 \item{verbose}{display additional data}
 }
+\value{
+a raster object containing the spatial distribution of emissions
+}
 \description{
-Calculate the spatial distribution by a raster kasked by shape/model grid information.
+Calculate the spatial distribution by a raster masked by shape/model grid information.
 }
 \details{
 About the DMSP and example data \url{https://en.wikipedia.org/wiki/Defense_Meteorological_Satellite_Program}

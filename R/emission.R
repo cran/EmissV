@@ -15,6 +15,8 @@
 #' @param positive TRUE (defoult) to check negative values and replace for zero
 #' @param verbose display additional information
 #'
+#' @return a vector of emissions in MOL / mk2 h for gases and ug / m2 s for aerosols.
+#'
 #' @note if Inventory is provided, the firsts tree arguments are not be used by the funciton.
 #'
 #' @note Is a good practice use the set_units(fe,your_unity), where fe is your emission factory and your_unity is usually g/km on your emission factory
@@ -46,15 +48,21 @@
 #' e_CO   <- emission(TOTAL,"CO",list(SP = SP, RJ = RJ),grid,mm=28)
 #'
 
-emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
-                     plot = F, positive = T,verbose = T){
+emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = FALSE,
+                     plot = FALSE, positive = TRUE,verbose = TRUE){
 
   if(!is.null(inventory)){
-    if(verbose)
-      cat("Using raster from inventory ...\n")
+    if(verbose){
+      if(missing(pol)){
+        cat("Using raster from inventory ...\n") # nocov
+      }else{
+        cat("Using raster from inventory for",pol,"...\n")
+      }
+    }
+
     # input is g m-2 s-1
     if(class(inventory)[1]=="RasterLayer"){
-      VAR_e <- rasterSource(inventory,grid,conservative = F,verbose = verbose)
+      VAR_e <- rasterSource(inventory,grid,conservative = FALSE,verbose = verbose)
     }
     ## SET THE ORIGINAL UNITS from read
     ## g m-2 s-1
@@ -73,16 +81,16 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
       VAR_e     <- VAR_e * conversao
     }
 
-    if(plot == T){
+    if(plot == TRUE){
       col   <- grid$Horizontal[1]
       rol   <- grid$Horizontal[2]
       r.lat <- range(grid$Lat)
       r.lon <- range(grid$Lon)
       r     <- raster::raster(nrows=rol,ncols=col,
                               xmn=r.lon[1],xmx=r.lon[2],ymn=r.lat[1],ymx=r.lat[2],
-                              crs= "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+                              crs= "+proj=longlat")
 
-      raster::values(r) <- as.matrix(as.numeric(VAR_e),ncol = col,nrow = row,byrow = T)
+      raster::values(r) <- as.matrix(as.numeric(VAR_e),ncol = col,nrow = row,byrow = TRUE)
       r                 <- raster::flip(r,2)
 
       if(missing(pol)){
@@ -101,7 +109,7 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
       print(a)
     }
     if(positive){
-      VAR_e <- check_positive(VAR_e)
+      VAR_e <- check_positive(VAR_e,pol)
       return(VAR_e)
     }else{
       return(VAR_e) # nocov
@@ -143,7 +151,7 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
     }
     VAR_e[is.na(VAR_e)]     <- 0
 
-    VAR_e <- rasterSource(VAR_e,grid,verbose = F)
+    VAR_e <- rasterSource(VAR_e,grid,verbose = FALSE)
 
     # put the units (to back the unit)
     VAR_e <- VAR_e * unidade
@@ -163,22 +171,23 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
     if(exists("ud_units$MOL"))
       units::remove_symbolic_unit("MOL") # nocov
     if(!exists("ud_units$MOL"))
-      units::install_conversion_constant("MOL", "g", const = mm) # new conversion
+      # units::install_conversion_constant("MOL", "g", const = mm) # old conversion function
+      units::install_unit("MOL", paste(mm,"g"))                    # new conversion function
     VAR_e   =  units::set_units(VAR_e,"MOL/d")
     VAR_e   =  units::set_units(VAR_e,"MOL/h")
     VAR_e   =  VAR_e / dx^2
   }
 
-  if(plot == T){
+  if(plot == TRUE){
     col   <- grid$Horizontal[1]
     rol   <- grid$Horizontal[2]
     r.lat <- range(grid$Lat)
     r.lon <- range(grid$Lon)
     r     <- raster::raster(nrows=rol,ncols=col,
                             xmn=r.lon[1],xmx=r.lon[2],ymn=r.lat[1],ymx=r.lat[2],
-                            crs= "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+                            crs= "+proj=longlat")
 
-    raster::values(r) <- as.matrix(as.numeric(VAR_e),ncol = col,nrow = row,byrow = T)
+    raster::values(r) <- as.matrix(as.numeric(VAR_e),ncol = col,nrow = row,byrow = TRUE)
     r                 <- raster::flip(r,2)
 
     a <- sp::spplot(r,scales = list(draw=TRUE),ylab="Lat",xlab="Lon",
@@ -191,22 +200,27 @@ emission <- function(total,pol,area,grid, inventory = NULL,mm = 1, aerosol = F,
     print(a)
   }
   if(positive){
-    VAR_e <- check_positive(VAR_e)
+    VAR_e <- check_positive(VAR_e,pol)
     return(VAR_e)
   }else{
     return(VAR_e) # nocov
   }
 }
 
-check_positive <- function(emiss){
+check_positive <- function(emiss,pol = '?'){
   warn <- FALSE
   for(i in 1:length(emiss)){
-    if(drop_units(emiss[i]) < 0){
-      warn <- TRUE                                     # nocov
-      emiss[i] = 0                                     # nocov
+    if(is.na(drop_units(emiss[i]))){
+      warn <- TRUE                         # nocov
+      emiss[i] = 0                         # nocov
+    }else{
+      if(drop_units(emiss[i]) < 0){
+        warn <- TRUE                       # nocov
+        emiss[i] = 0                       # nocov
+      }
     }
   }
   if(warn)
-    warning('Negative values found, replaced by zero') # nocov
+    warning('Negative or NA values found, replaced by zero in ',pol) # nocov
   return(emiss)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/read.R
 \name{read}
 \alias{read}
-\title{Read NetCDF data from global inventaries}
+\title{Read NetCDF data from global inventories}
 \source{
 Read abbout EDGAR at http://edgar.jrc.ec.europa.eu and MACCITY at
 http://accent.aero.jussieu.fr/MACC_metadata.php
@@ -10,12 +10,14 @@ http://accent.aero.jussieu.fr/MACC_metadata.php
 \usage{
 read(
   file = file.choose(),
+  version = NA,
   coef = rep(1, length(file)),
   spec = NULL,
-  version = NA,
-  month = 1,
   year = 1,
+  month = 1,
+  hour = 1,
   categories,
+  reproject = TRUE,
   as_raster = TRUE,
   skip_missing = FALSE,
   verbose = TRUE
@@ -24,21 +26,38 @@ read(
 \arguments{
 \item{file}{file name or names (variables are summed)}
 
-\item{coef}{coef to merge different sources (file) into one emission}
+\item{version}{Character; One of  of the following:
+\tabular{lllll}{
+  \strong{argument}\tab \strong{tested}\tab \strong{region}\tab \strong{resolution}\tab \strong{projection}\cr
+  EDGAR\tab 4.32 and 5.0 \tab Global \tab 0.1 x 0.1 ° \tab  longlat\cr
+  EDGAR_HTAPv2\tab 2.2 \tab Global \tab 0.1 x 0.1 °  \tab  longlat\cr
+  GAINS\tab v5a \tab Global \tab 0.5 x 0.5 ° \tab  longlat\cr
+  RCP\tab RCP3PD Glb \tab Global \tab 0.5 x 0.5 °  \tab  longlat\cr
+  MACCITY\tab 2010 \tab Global \tab 0.5 x 0.5 °  \tab  longlat\cr
+  FFDAS\tab 2.2 \tab Global \tab 0.1 x 0.1 ° \tab  longlat\cr
+  ODIAC\tab 2020 \tab Global \tab 1 x 1 ° \tab  longlat\cr
+  VULCAN-y\tab 3.0 \tab US \tab 1 x 1 Km \tab  lcc\cr
+  VULCAN-h\tab 3.0 \tab US \tab 1 x 1 Km \tab  lcc\cr
+  ACES\tab 2020 \tab NE US \tab 1 x 1 km \tab  lcc\cr
+}}
+
+\item{coef}{coefficients to merge different sources (file) into one emission}
 
 \item{spec}{numeric speciation vector to split emission into different species}
 
-\item{version}{inventory name 'EDGAR' (for 4.32 and 5.0),'EDGAR_HTAPv2','MACCITY','GAINS','RCP' or 'VULCAN'}
+\item{year}{scenario index (only for GAINS and VULCAN-y)}
 
-\item{month}{the desired month of the inventary (MACCITY)}
+\item{month}{the desired month of the inventory (MACCITY and ODIAC)}
 
-\item{year}{scenario index (GAINS)}
+\item{hour}{hour of the emission (only for ACES and VULCAN-h)}
 
-\item{categories}{considered categories (MACCITY, GAINS variable names), empty for all}
+\item{categories}{considered categories (for MACCITY/GAINS variable names), empty for use all}
 
-\item{as_raster}{return a raster (defoult) or matrix (with units)}
+\item{reproject}{to project the output to "+proj=longlat" needed for emission function (only for VULCAN and ACES)}
 
-\item{skip_missing}{return a zero emission for missing variables and a warning}
+\item{as_raster}{return a raster (default) or matrix (with units)}
+
+\item{skip_missing}{return a zero emission and a warning for missing files/variables}
 
 \item{verbose}{display additional information}
 }
@@ -46,15 +65,11 @@ read(
 Matrix or raster
 }
 \description{
-Read data from global inventories, can read several files and merge into one
-emission and/or split into several species (speciation process)
+Read data from global inventories. Several files can be read to produce one
+emission output and/or can be splitted into several species
 }
 \note{
-for 'GAINS' version, please use flux (kg m-2 s-1) NetCDF file from https://eccad3.sedoo.fr
-
-VULCAN is not fully supported, only for visualization purposes
-
-for 'RCP' version, use the flux (kg m-2 s-1) Netcdf file from https://www.iiasa.ac.at/web-apps/tnt/RcpDb
+for EDGAR (all versions), GAINS, RCP and MACCTITY, please use flux (kg m-2 s-1) NetCDF file.
 }
 \examples{
 \donttest{
@@ -62,29 +77,24 @@ dir.create(file.path(tempdir(), "EDGARv432"))
 folder <- setwd(file.path(tempdir(), "EDGARv432"))
 
 url <- "http://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EDGAR/datasets/v432_AP/NOx"
-file1 <- 'v432_NOx_2012_IPCC_1A1a.0.1x0.1.zip'
-file2 <- 'v432_NOx_2012_IPCC_1A2.0.1x0.1.zip'
-file3 <- 'v432_NOx_2012_IPCC_1A3b.0.1x0.1.zip'
+file <- 'v432_NOx_2012.0.1x0.1.zip'
 
-download.file(paste0(url,'/ENE/',file1), file1)
-download.file(paste0(url,'/IND/',file2), file2)
-download.file(paste0(url,'/TRO/',file3), file3)
+download.file(paste0(url,'/TOTALS/',file), file)
 
-unzip('v432_NOx_2012_IPCC_1A1a.0.1x0.1.zip')
-unzip('v432_NOx_2012_IPCC_1A2.0.1x0.1.zip')
-unzip('v432_NOx_2012_IPCC_1A3b.0.1x0.1.zip')
+unzip('v432_NOx_2012.0.1x0.1.zip')
 
-nox    <- read(file = dir(pattern = '.nc'),version = 'EDGAR')
+nox  <- read(file    = dir(pattern = '.nc'),
+             version = 'EDGAR',
+             spec    = c(E_NO  = 0.9 ,   # 90\% of NOx is NO
+                         E_NO2 = 0.1 ))  # 10\% of NOx is NO2
 setwd(folder)
 
-sp::spplot(nox, scales = list(draw=TRUE), xlab="Lat", ylab="Lon",main="NOx emissions from EDGAR")
+sp::spplot(nox$E_NO, scales = list(draw=TRUE),
+           xlab="Lat", ylab="Lon",
+           main="NO emissions from EDGAR (in g / m2 s)")
 
-d1     <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d01",sep=""))
-d2     <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d02",sep=""))
-nox_d1 <- rasterSource(nox,d1)
-nox_d2 <- rasterSource(nox,d2)
-image(nox_d1, axe = FALSE, main = "NOx emissions from transport-energy-industry for d1 (2012)")
-image(nox_d2, axe = FALSE, main = "NOx emissions from transport-energy-industry for d2 (2012)")
+d1  <- gridInfo(paste(system.file("extdata", package = "EmissV"),"/wrfinput_d01",sep=""))
+NO  <- emission(grid = d1, inventory = nox$E_NO, pol = "NO", mm = 30.01, plot = TRUE)
 }
 }
 \references{

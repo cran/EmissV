@@ -1,3 +1,14 @@
+## Version: 0.665.6.0 (2022-02-11)
+- changing deprecated install_symbolic_unit to install_unit for units v0.8-0+
+- order of emission function arguments changed
+- function streetDist temporarily removed
+
+## EmissV 0.665.5.5 (2021-06-23)
+- substitution of rgdal to sf
+
+## EmissV 0.665.5.4 (2021-06-16)
+- added support for EDGAR, EDGAR_HTAPv2, GAINS, RCP, MACCITY, FFDAS, ODIAC, VULCAN and ACES inventories in read()
+ 
 ## EmissV 0.665.3.0 (2020-12-11)
 - Removing the warning (due to Migration to PROJ6/GDAL3) on read() changing all "+proj=longlat +ellps=GRS80 +no_defs" tp "+proj=longlat"
 - read() support 'VULCAN' dataset

@@ -1,7 +1,11 @@
+## Version: 0.665.8.0 (2023-09-16)
+- added support for Edgar v8.1 monthly on read() function
+
 ## Version: 0.665.6.6 (2023-03-24)
 - removed remain dependencies of sp package
 - removed suggest packages: osmar,RCurl,rgdal
 - updated on examples, documentation and site
+- fixing in pointSource with verbose
 
 ## Version: 0.665.6.2 (2022-02-19)
 - update in gridInfo cen_lon

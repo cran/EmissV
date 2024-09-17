@@ -44,11 +44,11 @@ pointSource <- function(emissions, grid, verbose = TRUE){
                                  cbind(emissions$lon[i],emissions$lat[i]),
                                  cellnumbers=TRUE)[1]
       if(verbose){
-        xy <- xyFromCell(emis,id.cell)
+        xy  <- xyFromCell(emis,id.cell)
         lon <- xy[1]
         lat <- xy[2]
-        if(lat == -765779648826607744){
-          cat('point:',i,'is outside the grid domain!\n') #nocov
+        if(is.na(lat)){
+          cat('point:',row.names(emissions)[i],'is outside the grid domain!\n') #nocov
         }else{
           cat(paste("grid position","lat=",lat,"lon=",lon,"\n"))
         }
@@ -80,12 +80,7 @@ pointSource <- function(emissions, grid, verbose = TRUE){
           cat(paste("  height=",sprintf("%03.2f",altura[k]),"m k=",k,"\n"))
         }
       }
-      # if(emissions$z[i] < altura[2]){
-      #   a     <- 1
-      #   cat(paste("Emission heigh between", altura[1],"and",altura[2],"at k=",a,
-      #               "for z=",emissions$z[i]))
-      #   cat("\n")
-      # }
+
       for(k in 2:length(altura)){
         if(emissions$z[i] >= altura[k-1] & emissions$z[i] < altura[k]){
           a <- k -1
@@ -99,6 +94,7 @@ pointSource <- function(emissions, grid, verbose = TRUE){
       }
       emis[id.cell][a] <- emissions$e[i]
     }
+
   }
   return(emis)
 }

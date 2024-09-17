@@ -1,7 +1,7 @@
 Package: EmissV
 Title: Tools for Create Emissions for Air Quality Models
-Date: 2023-03-24
-Version: 0.665.6.6
+Date: 2024-09-16
+Version: 0.665.8.0
 Authors@R: c(
   person(given = "Daniel",
          family = "Schuch",
@@ -22,7 +22,7 @@ Description: Processing tools to create emissions for use in numerical air
   Functions to process individual point emissions, line emissions and 
   area emissions of pollutants are available as well as methods to 
   incorporate alternative data for Spatial distribution of emissions 
-  such as satellite images (Gavidia Calderon et. al, 2018) 
+  such as satellite images (Gavidia-Calderon et. al, 2018) 
   <doi:10.1016/j.atmosenv.2018.09.026> or openstreetmap data 
   (Andrade et al, 2015) <doi:10.3389/fenvs.2015.00009>.
 Depends: R (>= 3.4)
@@ -31,12 +31,12 @@ Suggests: testthat (>= 2.1.0), covr, lwgeom
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 URL: https://atmoschem.github.io/EmissV/
 BugReports: https://github.com/atmoschem/EmissV/issues
 NeedsCompilation: no
-Packaged: 2023-03-28 21:22:25 UTC; schuch
+Packaged: 2024-09-17 17:27:22 UTC; schuch
 Author: Daniel Schuch [aut, cre] (<https://orcid.org/0000-0001-5977-4519>),
   Sergio Ibarra-Espinosa [aut] (<https://orcid.org/0000-0002-3162-1905>)
 Repository: CRAN
-Date/Publication: 2023-03-31 14:00:05 UTC
+Date/Publication: 2024-09-17 17:50:02 UTC

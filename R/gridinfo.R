@@ -4,13 +4,14 @@
 #'
 #' @param file file name/path to a wrfinput, wrfchemi or geog_em file
 #' @param z TRUE for read wrfinput vertical coordinades
+#' @param missing_time time if the variable Times is missing
 #' @param verbose display additional information
 #'
 #' @return a list with grid information from air quality model
 #'
 #' @note just WRF-Chem is suported by now
 #'
-#' @import ncdf4
+#' @import ncdf4 sf
 #'
 #' @export
 #'
@@ -35,7 +36,8 @@
 #' text(grid_d3$xlim[1],grid_d3$Ylim[2],"d3",pos=2, offset = 0.0)
 #'}
 
-gridInfo <- function(file = file.choose(),z = FALSE,verbose = TRUE){
+gridInfo <- function(file = file.choose(),z = FALSE,
+                     missing_time = '1984-03-10',verbose = TRUE){
     if(verbose)
       cat(paste("Grid information from:",file,"\n"))
 
@@ -111,19 +113,17 @@ gridInfo <- function(file = file.choose(),z = FALSE,verbose = TRUE){
      dx <- ncdf4::ncatt_get(coordNC, varid=0, attname="DX")$value
      dy <- ncdf4::ncatt_get(coordNC, varid=0, attname="DY")$value
      if ( dx != dy ) {
-       stop(paste0('Error: Asymmetric grid cells not supported. DX=', dx, ', DY=', dy))  # nocov
-     }
-
-     dx <- ncdf4::ncatt_get(coordNC, varid=0, attname="DX")$value
-     dy <- ncdf4::ncatt_get(coordNC, varid=0, attname="DY")$value
-     if ( dx != dy ) {
        stop(paste0('Error: Asymmetric grid cells not supported. DX=', dx, ', DY=', dy)) # nocov
      }
 
      lat <- inNCLat
      lon <- inNCLon
 
-     time<- ncdf4::ncvar_get(wrf,varid = "Times")
+     if("Times" %in% names(wrf$var)){                                                   # nocov
+       time <- ncdf4::ncvar_get(wrf,varid = "Times")                                    # nocov
+     }else{                                                                             # nocov
+       time <- as.POSIXlt(missing_time, tz = "UTC", format="%Y-%m-%d", optional=FALSE)  # nocov
+     }
      dx  <- ncdf4::ncatt_get(wrf,varid = 0,attname = "DX")$value / 1000 # to km
      if(z){
        PHB <- ncdf4::ncvar_get(wrf,varid = "PHB")        # 3d
@@ -148,20 +148,41 @@ gridInfo <- function(file = file.choose(),z = FALSE,verbose = TRUE){
      ly  <- range(lat)
      nxi <- dim(lat)[1]
      nxj <- dim(lat)[2]
+
+     pontos     <- sf::st_multipoint(x = coords, dim = "XY")
+     coords     <- sf::st_sfc(x = pontos, crs = "+proj=longlat")
+     transform  <- sf::st_transform(x = coords, crs = geogrd.proj)
+     projcoords <- sf::st_coordinates(transform)[,1:2]
+
+     xmn <- projcoords[1,1] - dx*1000/2.0  # Left border
+     ymx <- projcoords[1,2] + dx*1000/2.0  # upper border
+     xmx <- xmn + nxi*dx*1000              # Right border
+     ymn <- ymx - nxj*dx*1000              # Bottom border
+
+     # Create an empty raster
+     r <- suppressWarnings(
+       raster::raster(nrows = nxi,
+                      ncols = nxj,
+                      resolution = dx * 1000,
+                      xmn = xmn,
+                      xmx = xmx,
+                      ymn = ymn,
+                      ymx = ymx,
+                      crs = geogrd.proj))
+
      OUT <- list(File = file, Times = time, Lat = lat, Lon = lon, z = z,
                  Horizontal = dim(lat), DX = dx, xlim = lx, ylim = ly,
                  Box = list(x = c(lx[2],lx[1],lx[1],lx[2],lx[2]),
                             y = c(ly[2],ly[2],ly[1],ly[1],ly[2])),
                  boundary = list(x = c(lon[1,],lon[,nxj],rev(lon[nxi,]),rev(lon[,1])),
                                  y = c(lat[1,],lat[,nxj],rev(lat[nxi,]),rev(lat[,1]))),
-                 # polygon = sp::Polygon(matrix(c( c(lon[1,],lon[,nxj],rev(lon[nxi,]),rev(lon[,1])),
-                 #                                 c(lat[1,],lat[,nxj],rev(lat[nxi,]),rev(lat[,1]))),
-                 #                              ncol = 2)),
                  polygon  = sf::st_polygon(x = list(matrix(c( c(lon[1,],lon[,nxj],rev(lon[nxi,]),rev(lon[,1])),
                                                               c(lat[1,],lat[,nxj],rev(lat[nxi,]),rev(lat[,1]))),
                                                            ncol = 2))),
                  map_proj    = map_proj,
                  coords      = coords,
-                 geogrd.proj = geogrd.proj)
+                 geogrd.proj = geogrd.proj,
+                 r           = r,
+                 grid        = raster::rasterToPolygons(r))
      return(OUT)
 }

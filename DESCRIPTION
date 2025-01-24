@@ -1,7 +1,7 @@
 Package: EmissV
 Title: Tools for Create Emissions for Air Quality Models
-Date: 2024-09-16
-Version: 0.665.8.0
+Date: 2025-01-24
+Version: 0.665.9.0
 Authors@R: c(
   person(given = "Daniel",
          family = "Schuch",
@@ -35,8 +35,8 @@ RoxygenNote: 7.3.2
 URL: https://atmoschem.github.io/EmissV/
 BugReports: https://github.com/atmoschem/EmissV/issues
 NeedsCompilation: no
-Packaged: 2024-09-17 17:27:22 UTC; schuch
+Packaged: 2025-01-24 21:03:17 UTC; under
 Author: Daniel Schuch [aut, cre] (<https://orcid.org/0000-0001-5977-4519>),
   Sergio Ibarra-Espinosa [aut] (<https://orcid.org/0000-0002-3162-1905>)
 Repository: CRAN
-Date/Publication: 2024-09-17 17:50:02 UTC
+Date/Publication: 2025-01-24 21:30:02 UTC
